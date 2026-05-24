@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ဝင်ငွေနှင့် အသုံးစရိတ် မှတ်တမ်း</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3498db">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <style>
+        body {
+            font-family: 'Pyidaungsu', sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 650px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        h2, h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .section {
+            margin-top: 25px;
+            padding: 15px;
+            background: #fafafa;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        input:disabled {
+            background-color: #e9ecef;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .btn-edit {
+            background-color: #f39c12;
+            padding: 5px 10px;
+            font-size: 14px;
+            width: auto;
+        }
+        .btn-edit:hover {
+            background-color: #d68910;
+        }
+        .btn-income-edit {
+            background-color: #f39c12;
+        }
+        .btn-income-edit:hover {
+            background-color: #d68910;
+        }
+        .btn-delete {
+            background-color: #e74c3c;
+            padding: 5px 10px;
+            font-size: 14px;
+            width: auto;
+        }
+        .btn-delete:hover {
+            background-color: #c0392b;
+        }
+        .btn-update {
+            background-color: #2ecc71;
+        }
+        .btn-update:hover {
+            background-color: #27ae60;
+        }
+        .btn-cancel {
+            background-color: #95a5a6;
+        }
+        .btn-cancel:hover {
+            background-color: #7f8c8d;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #ecf0f1;
+        }
+        .action-btns {
+            display: flex;
+            gap: 5px;
+        }
+        .summary-box {
+            background-color: #e8f8f5;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #1abc9c;
+            margin-top: 10px;
+            font-size: 1.1em;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .summary-row:last-child {
+            margin-bottom: 0;
+            font-weight: bold;
+            border-top: 1px solid #1abc9c;
+            padding-top: 10px;
+        }
+        .text-green { color: #27ae60; }
+        .text-red { color: #e74c3c; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>📊 ဝင်ငွေနှင့် အသုံးစရိတ် မှတ်တမ်း</h2>
+
+    <div class="section">
+        <h3>💰 လစဉ် ဝင်ငွေမှတ်တမ်း</h3>
+        <div class="form-group">
+            <label for="incomeMonth">လရွေးချယ်ပါ</label>
+            <input type="month" id="incomeMonth" onchange="loadIncome()">
+        </div>
+        <div class="form-group">
+            <label for="incomeAmount">ဝင်ငွေပမာဏ (ကျပ်)</label>
+            <input type="number" id="incomeAmount" placeholder="ဥပမာ - 500000">
+        </div>
+        <div class="btn-group">
+            <button onclick="saveIncome()" id="saveIncomeBtn">သိမ်းဆည်းမည်</button>
+            <button onclick="editIncome()" id="editIncomeBtn" class="btn-income-edit" style="display: none;">ပြင်ဆင်မည်</button>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3 id="formTitle">🛒 အသုံးစရိတ် ထည့်သွင်းရန်</h3>
+        <div class="form-group">
+            <label for="itemName">ပစ္စည်းအမည် / အကြောင်းအရာ</label>
+            <input type="text" id="itemName" placeholder="ဥပမာ - ဆန်၊ ဆီ၊ မီးဘီလ်" required>
+        </div>
+        <div class="form-group">
+            <label for="itemPrice">ကျသင့်ငွေ (ကျပ်)</label>
+            <input type="number" id="itemPrice" placeholder="ဥပမာ - 5000" required>
+        </div>
+        <div class="form-group">
+            <label for="itemDate">ရက်စွဲ</label>
+            <input type="date" id="itemDate" required>
+        </div>
+        
+        <div class="btn-group">
+            <button onclick="addExpense()" id="addExpenseBtn">စာရင်းသွင်းမည်</button>
+            <button onclick="updateExpense()" id="updateExpenseBtn" class="btn-update" style="display: none;">ပြင်ဆင်ချက်ကိုသိမ်းမည်</button>
+            <button onclick="cancelEdit()" id="cancelEditBtn" class="btn-cancel" style="display: none;">မပြင်တော့ပါ</button>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>📋 အသုံးစရိတ် မှတ်တမ်းများ</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ရက်စွဲ</th>
+                    <th>အကြောင်းအရာ</th>
+                    <th>ကျသင့်ငွေ</th>
+                    <th>လုပ်ဆောင်ချက်</th>
+                </tr>
+            </thead>
+            <tbody id="expenseList">
+                </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h3>📅 လချုပ် အစီရင်ခံစာ</h3>
+        <div class="form-group">
+            <label for="summaryMonth">လရွေးချယ်ပါ</label>
+            <input type="month" id="summaryMonth" onchange="calculateSummary()">
+        </div>
+        <div class="summary-box">
+            <div class="summary-row">
+                <span>စုစုပေါင်း ဝင်ငွေ:</span>
+                <span id="totalIncomeText" class="text-green">0 ကျပ်</span>
+            </div>
+            <div class="summary-row">
+                <span>စုစုပေါင်း အသုံးစရိတ်:</span>
+                <span id="totalExpenseText" class="text-red">0 ကျပ်</span>
+            </div>
+            <div class="summary-row">
+                <span>လက်ကျန်ငွေ:</span>
+                <span id="balanceText">0 ကျပ်</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Data များကို LocalStorage မှ ယူရန်
+    let expenseData = JSON.parse(localStorage.getItem('expenseData')) || [];
+    let incomeData = JSON.parse(localStorage.getItem('incomeData')) || {}; 
+    
+    let editExpenseId = null; 
+
+    window.onload = function() {
+        const today = new Date();
+        document.getElementById('itemDate').valueAsDate = today;
+        const currentMonth = today.toISOString().slice(0, 7); 
+        
+        document.getElementById('incomeMonth').value = currentMonth;
+        document.getElementById('summaryMonth').value = currentMonth;
+        
+        loadIncome(); 
+        displayExpenses(); 
+        calculateSummary(); 
+    };
+
+    /* --- ဝင်ငွေပိုင်း လုပ်ဆောင်ချက်များ --- */
+    function loadIncome() {
+        const month = document.getElementById('incomeMonth').value;
+        const amountInput = document.getElementById('incomeAmount');
+        const saveBtn = document.getElementById('saveIncomeBtn');
+        const editBtn = document.getElementById('editIncomeBtn');
+
+        if (incomeData[month] !== undefined) {
+            amountInput.value = incomeData[month];
+            amountInput.disabled = true;
+            saveBtn.style.display = 'none';
+            editBtn.style.display = 'block';
+        } else {
+            amountInput.value = '';
+            amountInput.disabled = false;
+            saveBtn.style.display = 'block';
+            editBtn.style.display = 'none';
+        }
+    }
+
+    function saveIncome() {
+        const month = document.getElementById('incomeMonth').value;
+        const amount = document.getElementById('incomeAmount').value;
+
+        if (!month || amount === "") {
+            alert("ကျေးဇူးပြု၍ လ နှင့် ဝင်ငွေပမာဏကို အပြည့်အစုံထည့်ပါ။");
+            return;
+        }
+
+        incomeData[month] = parseFloat(amount);
+        localStorage.setItem('incomeData', JSON.stringify(incomeData));
+        loadIncome(); 
+        if(document.getElementById('summaryMonth').value === month) {
+            calculateSummary(); 
+        }
+        alert("ဝင်ငွေကို အောင်မြင်စွာ သိမ်းဆည်းပြီးပါပြီ။");
+    }
+
+    function editIncome() {
+        document.getElementById('incomeAmount').disabled = false;
+        document.getElementById('incomeAmount').focus();
+        document.getElementById('saveIncomeBtn').style.display = 'block';
+        document.getElementById('editIncomeBtn').style.display = 'none';
+    }
+
+
+    /* --- အသုံးစရိတ်ပိုင်း လုပ်ဆောင်ချက်များ --- */
+    function addExpense() {
+        const name = document.getElementById('itemName').value;
+        const price = document.getElementById('itemPrice').value;
+        const date = document.getElementById('itemDate').value;
+
+        if (name === "" || price === "" || date === "") {
+            alert("ကျေးဇူးပြု၍ အချက်အလက်များကို အပြည့်အစုံထည့်ပါ။");
+            return;
+        }
+
+        const item = {
+            id: Date.now(),
+            name: name,
+            price: parseFloat(price),
+            date: date
+        };
+
+        expenseData.push(item);
+        localStorage.setItem('expenseData', JSON.stringify(expenseData));
+        
+        displayExpenses();
+        calculateSummary();
+        clearExpenseForm();
+    }
+
+    function displayExpenses() {
+        const expenseList = document.getElementById('expenseList');
+        expenseList.innerHTML = '';
+
+        let reversedList = [...expenseData].reverse(); 
+
+        reversedList.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.date}</td>
+                <td>${item.name}</td>
+                <td>${item.price.toLocaleString()}</td>
+                <td>
+                    <div class="action-btns">
+                        <button class="btn-edit" onclick="setupEditExpense(${item.id})">ပြင်ဆင်မည်</button>
+                        <button class="btn-delete" onclick="deleteExpense(${item.id})">ဖျက်မည်</button>
+                    </div>
+                </td>
+            `;
+            expenseList.appendChild(row);
+        });
+    }
+
+    function setupEditExpense(id) {
+        const item = expenseData.find(i => i.id === id);
+        if (!item) return;
+
+        editExpenseId = id; 
+
+        document.getElementById('itemName').value = item.name;
+        document.getElementById('itemPrice').value = item.price;
+        document.getElementById('itemDate').value = item.date;
+
+        document.getElementById('formTitle').innerText = "📝 အသုံးစရိတ် ပြင်ဆင်ရန်";
+        document.getElementById('addExpenseBtn').style.display = 'none';
+        document.getElementById('updateExpenseBtn').style.display = 'block';
+        document.getElementById('cancelEditBtn').style.display = 'block';
+
+        document.getElementById('formTitle').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function updateExpense() {
+        const name = document.getElementById('itemName').value;
+        const price = document.getElementById('itemPrice').value;
+        const date = document.getElementById('itemDate').value;
+
+        if (name === "" || price === "" || date === "") {
+            alert("ကျေးဇူးပြု၍ အချက်အလက်များကို အပြည့်အစုံထည့်ပါ။");
+            return;
+        }
+
+        expenseData = expenseData.map(item => {
+            if (item.id === editExpenseId) {
+                return { ...item, name: name, price: parseFloat(price), date: date };
+            }
+            return item;
+        });
+
+        localStorage.setItem('expenseData', JSON.stringify(expenseData));
+        
+        displayExpenses();
+        calculateSummary();
+        cancelEdit(); 
+        alert("ပြင်ဆင်ချက်များကို အောင်မြင်စွာ သိမ်းဆည်းပြီးပါပြီ။");
+    }
+
+    function cancelEdit() {
+        editExpenseId = null;
+        clearExpenseForm();
+        
+        document.getElementById('formTitle').innerText = "🛒 အသုံးစရိတ် ထည့်သွင်းရန်";
+        document.getElementById('addExpenseBtn').style.display = 'block';
+        document.getElementById('updateExpenseBtn').style.display = 'none';
+        document.getElementById('cancelEditBtn').style.display = 'none';
+    }
+
+    function clearExpenseForm() {
+        document.getElementById('itemName').value = '';
+        document.getElementById('itemPrice').value = '';
+        document.getElementById('itemDate').valueAsDate = new Date();
+    }
+
+    function deleteExpense(id) {
+        if (confirm("ဤမှတ်တမ်းကို ဖျက်ရန် သေချာပါသလား?")) {
+            if(editExpenseId === id) {
+                cancelEdit();
+            }
+            expenseData = expenseData.filter(item => item.id !== id);
+            localStorage.setItem('expenseData', JSON.stringify(expenseData));
+            displayExpenses();
+            calculateSummary();
+        }
+    }
+
+    /* --- လချုပ်စာရင်း တွက်ချက်ခြင်း --- */
+    function calculateSummary() {
+        const selectedMonth = document.getElementById('summaryMonth').value; 
+        if (!selectedMonth) return;
+
+        const totalIncome = incomeData[selectedMonth] || 0;
+
+        let totalExpense = 0;
+        expenseData.forEach(item => {
+            if (item.date.startsWith(selectedMonth)) {
+                totalExpense += item.price;
+            }
+        });
+
+        const balance = totalIncome - totalExpense;
+
+        document.getElementById('totalIncomeText').innerText = totalIncome.toLocaleString() + " ကျပ်";
+        document.getElementById('totalExpenseText').innerText = totalExpense.toLocaleString() + " ကျပ်";
+        
+        const balanceElement = document.getElementById('balanceText');
+        balanceElement.innerText = balance.toLocaleString() + " ကျပ်";
+        
+        if (balance < 0) {
+            balanceElement.className = "text-red";
+        } else {
+            balanceElement.className = "text-green";
+        }
+    }
+
+    // PWA Service Worker Registration
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function() {
+            navigator.serviceWorker
+                .register("./sw.js")
+                .then(res => console.log("Service worker registered successfully!"))
+                .catch(err => console.log("Service worker registration failed: ", err));
+        });
+    }
+</script>
+
+</body>
+</html>
