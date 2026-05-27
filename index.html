@@ -54,11 +54,6 @@
             border-radius: 5px;
             font-size: 16px;
         }
-        input:disabled {
-            background-color: #e9ecef;
-            color: #6c757d;
-            cursor: not-allowed;
-        }
         .btn-group {
             display: flex;
             gap: 10px;
@@ -77,55 +72,43 @@
         button:hover {
             background-color: #2980b9;
         }
+        .btn-income { background-color: #27ae60; }
+        .btn-income:hover { background-color: #2ecc71; }
+        
         .btn-edit {
             background-color: #f39c12;
             padding: 5px 10px;
             font-size: 14px;
             width: auto;
         }
-        .btn-edit:hover {
-            background-color: #d68910;
-        }
-        .btn-income-edit {
-            background-color: #f39c12;
-        }
-        .btn-income-edit:hover {
-            background-color: #d68910;
-        }
+        .btn-edit:hover { background-color: #d68910; }
+        
         .btn-delete {
             background-color: #e74c3c;
             padding: 5px 10px;
             font-size: 14px;
             width: auto;
         }
-        .btn-delete:hover {
-            background-color: #c0392b;
-        }
-        .btn-update {
-            background-color: #2ecc71;
-        }
-        .btn-update:hover {
-            background-color: #27ae60;
-        }
-        .btn-cancel {
-            background-color: #95a5a6;
-        }
-        .btn-cancel:hover {
-            background-color: #7f8c8d;
-        }
+        .btn-delete:hover { background-color: #c0392b; }
+        
+        .btn-update { background-color: #2ecc71; }
+        .btn-update:hover { background-color: #27ae60; }
+        
+        .btn-cancel { background-color: #95a5a6; }
+        .btn-cancel:hover { background-color: #7f8c8d; }
+        
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
+            font-size: 15px;
         }
         th, td {
             padding: 10px;
             border: 1px solid #ddd;
             text-align: left;
         }
-        th {
-            background-color: #ecf0f1;
-        }
+        th { background-color: #ecf0f1; }
         .action-btns {
             display: flex;
             gap: 5px;
@@ -159,40 +142,61 @@
     <h2>📊 ဝင်ငွေနှင့် အသုံးစရိတ် မှတ်တမ်း</h2>
 
     <div class="section">
-        <h3>💰 လစဉ် ဝင်ငွေမှတ်တမ်း</h3>
+        <h3 id="incomeFormTitle">💰 ဝင်ငွေ ထည့်သွင်းရန်</h3>
         <div class="form-group">
-            <label for="incomeMonth">လရွေးချယ်ပါ</label>
-            <input type="month" id="incomeMonth" onchange="loadIncome()">
+            <label for="incomeName">အကြောင်းအရာ (ဥပမာ - လစာ၊ အရောင်းအဝယ်၊ အပိုဝင်ငွေ)</label>
+            <input type="text" id="incomeName" placeholder="ဝင်ငွေရရှိသည့် အကြောင်းအရာ" required>
         </div>
         <div class="form-group">
-            <label for="incomeAmount">ဝင်ငွေပမာဏ (ကျပ်)</label>
-            <input type="number" id="incomeAmount" placeholder="ဥပမာ - 500000">
+            <label for="incomeAmount">ရရှိငွေပမာဏ (ကျပ်)</label>
+            <input type="number" id="incomeAmount" placeholder="ဥပမာ - 500000" required>
+        </div>
+        <div class="form-group">
+            <label for="incomeDate">ရက်စွဲ</label>
+            <input type="date" id="incomeDate" required>
         </div>
         <div class="btn-group">
-            <button onclick="saveIncome()" id="saveIncomeBtn">သိမ်းဆည်းမည်</button>
-            <button onclick="editIncome()" id="editIncomeBtn" class="btn-income-edit" style="display: none;">ပြင်ဆင်မည်</button>
+            <button onclick="addIncome()" id="addIncomeBtn" class="btn-income">ဝင်ငွေစာရင်းသွင်းမည်</button>
+            <button onclick="updateIncome()" id="updateIncomeBtn" class="btn-update" style="display: none;">ပြင်ဆင်ချက်ကိုသိမ်းမည်</button>
+            <button onclick="cancelIncomeEdit()" id="cancelIncomeEditBtn" class="btn-cancel" style="display: none;">မပြင်တော့ပါ</button>
         </div>
     </div>
 
     <div class="section">
-        <h3 id="formTitle">🛒 အသုံးစရိတ် ထည့်သွင်းရန်</h3>
+        <h3>📈 ဝင်ငွေ မှတ်တမ်းများ</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ရက်စွဲ</th>
+                    <th>အကြောင်းအရာ</th>
+                    <th>ပမာဏ</th>
+                    <th>လုပ်ဆောင်ချက်</th>
+                </tr>
+            </thead>
+            <tbody id="incomeList">
+                </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h3 id="expenseFormTitle">🛒 အသုံးစရိတ် ထည့်သွင်းရန်</h3>
         <div class="form-group">
-            <label for="itemName">ပစ္စည်းအမည် / အကြောင်းအရာ</label>
-            <input type="text" id="itemName" placeholder="ဥပမာ - ဆန်၊ ဆီ၊ မီးဘီလ်" required>
+            <label for="expenseName">ပစ္စည်းအမည် / အကြောင်းအရာ</label>
+            <input type="text" id="expenseName" placeholder="ဥပမာ - ဆန်၊ ဆီ၊ မီးဘီလ်" required>
         </div>
         <div class="form-group">
-            <label for="itemPrice">ကျသင့်ငွေ (ကျပ်)</label>
-            <input type="number" id="itemPrice" placeholder="ဥပမာ - 5000" required>
+            <label for="expensePrice">ကျသင့်ငွေ (ကျပ်)</label>
+            <input type="number" id="expensePrice" placeholder="ဥပမာ - 5000" required>
         </div>
         <div class="form-group">
-            <label for="itemDate">ရက်စွဲ</label>
-            <input type="date" id="itemDate" required>
+            <label for="expenseDate">ရက်စွဲ</label>
+            <input type="date" id="expenseDate" required>
         </div>
         
         <div class="btn-group">
-            <button onclick="addExpense()" id="addExpenseBtn">စာရင်းသွင်းမည်</button>
+            <button onclick="addExpense()" id="addExpenseBtn">အသုံးစရိတ်စာရင်းသွင်းမည်</button>
             <button onclick="updateExpense()" id="updateExpenseBtn" class="btn-update" style="display: none;">ပြင်ဆင်ချက်ကိုသိမ်းမည်</button>
-            <button onclick="cancelEdit()" id="cancelEditBtn" class="btn-cancel" style="display: none;">မပြင်တော့ပါ</button>
+            <button onclick="cancelExpenseEdit()" id="cancelExpenseEditBtn" class="btn-cancel" style="display: none;">မပြင်တော့ပါ</button>
         </div>
     </div>
 
@@ -236,79 +240,145 @@
 </div>
 
 <script>
-    // Data များကို LocalStorage မှ ယူရန်
+    // Data များကို LocalStorage မှ ယူရန် (Array အဖြစ်ပြောင်းလဲထားပါသည်)
+    let incomeData = JSON.parse(localStorage.getItem('incomeRecordList')) || []; 
     let expenseData = JSON.parse(localStorage.getItem('expenseData')) || [];
-    let incomeData = JSON.parse(localStorage.getItem('incomeData')) || {}; 
     
+    let editIncomeId = null; 
     let editExpenseId = null; 
 
     window.onload = function() {
         const today = new Date();
-        document.getElementById('itemDate').valueAsDate = today;
-        const currentMonth = today.toISOString().slice(0, 7); 
+        document.getElementById('incomeDate').valueAsDate = today;
+        document.getElementById('expenseDate').valueAsDate = today;
         
-        document.getElementById('incomeMonth').value = currentMonth;
+        const currentMonth = today.toISOString().slice(0, 7); 
         document.getElementById('summaryMonth').value = currentMonth;
         
-        loadIncome(); 
+        displayIncomes(); 
         displayExpenses(); 
         calculateSummary(); 
     };
 
     /* --- ဝင်ငွေပိုင်း လုပ်ဆောင်ချက်များ --- */
-    function loadIncome() {
-        const month = document.getElementById('incomeMonth').value;
-        const amountInput = document.getElementById('incomeAmount');
-        const saveBtn = document.getElementById('saveIncomeBtn');
-        const editBtn = document.getElementById('editIncomeBtn');
-
-        if (incomeData[month] !== undefined) {
-            amountInput.value = incomeData[month];
-            amountInput.disabled = true;
-            saveBtn.style.display = 'none';
-            editBtn.style.display = 'block';
-        } else {
-            amountInput.value = '';
-            amountInput.disabled = false;
-            saveBtn.style.display = 'block';
-            editBtn.style.display = 'none';
-        }
-    }
-
-    function saveIncome() {
-        const month = document.getElementById('incomeMonth').value;
+    function addIncome() {
+        const name = document.getElementById('incomeName').value;
         const amount = document.getElementById('incomeAmount').value;
+        const date = document.getElementById('incomeDate').value;
 
-        if (!month || amount === "") {
-            alert("ကျေးဇူးပြု၍ လ နှင့် ဝင်ငွေပမာဏကို အပြည့်အစုံထည့်ပါ။");
+        if (name === "" || amount === "" || date === "") {
+            alert("ကျေးဇူးပြု၍ ဝင်ငွေ အချက်အလက်များကို အပြည့်အစုံထည့်ပါ။");
             return;
         }
 
-        incomeData[month] = parseFloat(amount);
-        localStorage.setItem('incomeData', JSON.stringify(incomeData));
-        loadIncome(); 
-        if(document.getElementById('summaryMonth').value === month) {
-            calculateSummary(); 
-        }
-        alert("ဝင်ငွေကို အောင်မြင်စွာ သိမ်းဆည်းပြီးပါပြီ။");
+        const item = {
+            id: Date.now(),
+            name: name,
+            amount: parseFloat(amount),
+            date: date
+        };
+
+        incomeData.push(item);
+        localStorage.setItem('incomeRecordList', JSON.stringify(incomeData));
+        
+        displayIncomes();
+        calculateSummary();
+        clearIncomeForm();
     }
 
-    function editIncome() {
-        document.getElementById('incomeAmount').disabled = false;
-        document.getElementById('incomeAmount').focus();
-        document.getElementById('saveIncomeBtn').style.display = 'block';
-        document.getElementById('editIncomeBtn').style.display = 'none';
+    function displayIncomes() {
+        const incomeList = document.getElementById('incomeList');
+        incomeList.innerHTML = '';
+
+        let reversedList = [...incomeData].reverse(); 
+
+        reversedList.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.date}</td>
+                <td>${item.name}</td>
+                <td class="text-green">+${item.amount.toLocaleString()}</td>
+                <td>
+                    <div class="action-btns">
+                        <button class="btn-edit" onclick="setupEditIncome(${item.id})">ပြင်မည်</button>
+                        <button class="btn-delete" onclick="deleteIncome(${item.id})">ဖျက်မည်</button>
+                    </div>
+                </td>
+            `;
+            incomeList.appendChild(row);
+        });
+    }
+
+    function setupEditIncome(id) {
+        const item = incomeData.find(i => i.id === id);
+        if (!item) return;
+
+        editIncomeId = id; 
+        document.getElementById('incomeName').value = item.name;
+        document.getElementById('incomeAmount').value = item.amount;
+        document.getElementById('incomeDate').value = item.date;
+
+        document.getElementById('incomeFormTitle').innerText = "📝 ဝင်ငွေ ပြင်ဆင်ရန်";
+        document.getElementById('addIncomeBtn').style.display = 'none';
+        document.getElementById('updateIncomeBtn').style.display = 'block';
+        document.getElementById('cancelIncomeEditBtn').style.display = 'block';
+        document.getElementById('incomeFormTitle').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function updateIncome() {
+        const name = document.getElementById('incomeName').value;
+        const amount = document.getElementById('incomeAmount').value;
+        const date = document.getElementById('incomeDate').value;
+
+        if (name === "" || amount === "" || date === "") return;
+
+        incomeData = incomeData.map(item => {
+            if (item.id === editIncomeId) {
+                return { ...item, name: name, amount: parseFloat(amount), date: date };
+            }
+            return item;
+        });
+
+        localStorage.setItem('incomeRecordList', JSON.stringify(incomeData));
+        displayIncomes();
+        calculateSummary();
+        cancelIncomeEdit(); 
+    }
+
+    function cancelIncomeEdit() {
+        editIncomeId = null;
+        clearIncomeForm();
+        document.getElementById('incomeFormTitle').innerText = "💰 ဝင်ငွေ ထည့်သွင်းရန်";
+        document.getElementById('addIncomeBtn').style.display = 'block';
+        document.getElementById('updateIncomeBtn').style.display = 'none';
+        document.getElementById('cancelIncomeEditBtn').style.display = 'none';
+    }
+
+    function clearIncomeForm() {
+        document.getElementById('incomeName').value = '';
+        document.getElementById('incomeAmount').value = '';
+        document.getElementById('incomeDate').valueAsDate = new Date();
+    }
+
+    function deleteIncome(id) {
+        if (confirm("ဤဝင်ငွေမှတ်တမ်းကို ဖျက်ရန် သေချာပါသလား?")) {
+            if(editIncomeId === id) cancelIncomeEdit();
+            incomeData = incomeData.filter(item => item.id !== id);
+            localStorage.setItem('incomeRecordList', JSON.stringify(incomeData));
+            displayIncomes();
+            calculateSummary();
+        }
     }
 
 
     /* --- အသုံးစရိတ်ပိုင်း လုပ်ဆောင်ချက်များ --- */
     function addExpense() {
-        const name = document.getElementById('itemName').value;
-        const price = document.getElementById('itemPrice').value;
-        const date = document.getElementById('itemDate').value;
+        const name = document.getElementById('expenseName').value;
+        const price = document.getElementById('expensePrice').value;
+        const date = document.getElementById('expenseDate').value;
 
         if (name === "" || price === "" || date === "") {
-            alert("ကျေးဇူးပြု၍ အချက်အလက်များကို အပြည့်အစုံထည့်ပါ။");
+            alert("ကျေးဇူးပြု၍ အသုံးစရိတ် အချက်အလက်များကို အပြည့်အစုံထည့်ပါ။");
             return;
         }
 
@@ -338,10 +408,10 @@
             row.innerHTML = `
                 <td>${item.date}</td>
                 <td>${item.name}</td>
-                <td>${item.price.toLocaleString()}</td>
+                <td class="text-red">-${item.price.toLocaleString()}</td>
                 <td>
                     <div class="action-btns">
-                        <button class="btn-edit" onclick="setupEditExpense(${item.id})">ပြင်ဆင်မည်</button>
+                        <button class="btn-edit" onclick="setupEditExpense(${item.id})">ပြင်မည်</button>
                         <button class="btn-delete" onclick="deleteExpense(${item.id})">ဖျက်မည်</button>
                     </div>
                 </td>
@@ -355,28 +425,23 @@
         if (!item) return;
 
         editExpenseId = id; 
+        document.getElementById('expenseName').value = item.name;
+        document.getElementById('expensePrice').value = item.price;
+        document.getElementById('expenseDate').value = item.date;
 
-        document.getElementById('itemName').value = item.name;
-        document.getElementById('itemPrice').value = item.price;
-        document.getElementById('itemDate').value = item.date;
-
-        document.getElementById('formTitle').innerText = "📝 အသုံးစရိတ် ပြင်ဆင်ရန်";
+        document.getElementById('expenseFormTitle').innerText = "📝 အသုံးစရိတ် ပြင်ဆင်ရန်";
         document.getElementById('addExpenseBtn').style.display = 'none';
         document.getElementById('updateExpenseBtn').style.display = 'block';
-        document.getElementById('cancelEditBtn').style.display = 'block';
-
-        document.getElementById('formTitle').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('cancelExpenseEditBtn').style.display = 'block';
+        document.getElementById('expenseFormTitle').scrollIntoView({ behavior: 'smooth' });
     }
 
     function updateExpense() {
-        const name = document.getElementById('itemName').value;
-        const price = document.getElementById('itemPrice').value;
-        const date = document.getElementById('itemDate').value;
+        const name = document.getElementById('expenseName').value;
+        const price = document.getElementById('expensePrice').value;
+        const date = document.getElementById('expenseDate').value;
 
-        if (name === "" || price === "" || date === "") {
-            alert("ကျေးဇူးပြု၍ အချက်အလက်များကို အပြည့်အစုံထည့်ပါ။");
-            return;
-        }
+        if (name === "" || price === "" || date === "") return;
 
         expenseData = expenseData.map(item => {
             if (item.id === editExpenseId) {
@@ -386,34 +451,29 @@
         });
 
         localStorage.setItem('expenseData', JSON.stringify(expenseData));
-        
         displayExpenses();
         calculateSummary();
-        cancelEdit(); 
-        alert("ပြင်ဆင်ချက်များကို အောင်မြင်စွာ သိမ်းဆည်းပြီးပါပြီ။");
+        cancelExpenseEdit(); 
     }
 
-    function cancelEdit() {
+    function cancelExpenseEdit() {
         editExpenseId = null;
         clearExpenseForm();
-        
-        document.getElementById('formTitle').innerText = "🛒 အသုံးစရိတ် ထည့်သွင်းရန်";
+        document.getElementById('expenseFormTitle').innerText = "🛒 အသုံးစရိတ် ထည့်သွင်းရန်";
         document.getElementById('addExpenseBtn').style.display = 'block';
         document.getElementById('updateExpenseBtn').style.display = 'none';
-        document.getElementById('cancelEditBtn').style.display = 'none';
+        document.getElementById('cancelExpenseEditBtn').style.display = 'none';
     }
 
     function clearExpenseForm() {
-        document.getElementById('itemName').value = '';
-        document.getElementById('itemPrice').value = '';
-        document.getElementById('itemDate').valueAsDate = new Date();
+        document.getElementById('expenseName').value = '';
+        document.getElementById('expensePrice').value = '';
+        document.getElementById('expenseDate').valueAsDate = new Date();
     }
 
     function deleteExpense(id) {
-        if (confirm("ဤမှတ်တမ်းကို ဖျက်ရန် သေချာပါသလား?")) {
-            if(editExpenseId === id) {
-                cancelEdit();
-            }
+        if (confirm("ဤအသုံးစရိတ်မှတ်တမ်းကို ဖျက်ရန် သေချာပါသလား?")) {
+            if(editExpenseId === id) cancelExpenseEdit();
             expenseData = expenseData.filter(item => item.id !== id);
             localStorage.setItem('expenseData', JSON.stringify(expenseData));
             displayExpenses();
@@ -426,7 +486,12 @@
         const selectedMonth = document.getElementById('summaryMonth').value; 
         if (!selectedMonth) return;
 
-        const totalIncome = incomeData[selectedMonth] || 0;
+        let totalIncome = 0;
+        incomeData.forEach(item => {
+            if (item.date.startsWith(selectedMonth)) {
+                totalIncome += item.amount;
+            }
+        });
 
         let totalExpense = 0;
         expenseData.forEach(item => {
@@ -455,7 +520,7 @@
         window.addEventListener("load", function() {
             navigator.serviceWorker
                 .register("./sw.js")
-                .then(res => console.log("Service worker registered successfully!"))
+                .then(res => console.log("Service worker registered!"))
                 .catch(err => console.log("Service worker registration failed: ", err));
         });
     }
